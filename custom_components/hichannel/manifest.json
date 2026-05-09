@@ -1,0 +1,10 @@
+{
+  "domain": "hichannel",
+  "name": "HiChannel",
+  "version": "1.0.0",
+  "documentation": "https://github.com/nono-liang/hichannel",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [],
+  "iot_class": "cloud_polling"
+}

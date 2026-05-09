@@ -4,7 +4,6 @@ from __future__ import annotations
 import re
 import logging
 
-from homeassistant.components.media_player.const import MediaType
 from homeassistant.components.media_source.models import (
     BrowseMediaSource,
     MediaSource,

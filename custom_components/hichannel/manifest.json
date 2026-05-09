@@ -3,8 +3,11 @@
   "name": "HiChannel",
   "version": "1.0.0",
   "documentation": "https://github.com/nono-liang/hichannel",
+  "config_flow": true,
   "requirements": [],
   "dependencies": [],
   "codeowners": [],
-  "iot_class": "cloud_polling"
+  "iot_class": "cloud_polling",
+  "homeassistant": "2023.1.0",
+  "issue_tracker": "https://github.com/nono-liang/hichannel/issues"
 }

@@ -100,7 +100,7 @@ class HiChannelMediaSource(MediaSource):
             children=[
                 self._channel_source(cid) for cid in CHANNELS
             ],
-            children_media_class="channel",
+            children_media_class="music",
         )
 
     # ------------------------------------------------------------------
@@ -114,8 +114,8 @@ class HiChannelMediaSource(MediaSource):
         return BrowseMediaSource(
             domain=DOMAIN,
             identifier=channel_id,
-            media_class="channel",
-            media_content_type=MIME_HLS,
+            media_class="music",
+            media_content_type="music",
             title=ch["name"],
             can_play=True,
             can_expand=False,

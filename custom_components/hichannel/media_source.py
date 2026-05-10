@@ -18,6 +18,9 @@ from . import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 MIME_HLS = "application/x-mpegURL"
+# Browse-time content type: must start with "audio/" so Google Cast (Nest
+# Audio/Mini, speaker groups) doesn't hide the item via its audio_content_filter.
+BROWSE_MIME_HLS = "audio/mpegurl"
 
 CHANNELS: dict[str, dict] = {
     "bestradio": {
@@ -115,7 +118,7 @@ class HiChannelMediaSource(MediaSource):
             domain=DOMAIN,
             identifier=channel_id,
             media_class="music",
-            media_content_type="music",
+            media_content_type=BROWSE_MIME_HLS,
             title=ch["name"],
             can_play=True,
             can_expand=False,

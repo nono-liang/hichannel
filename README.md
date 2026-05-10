@@ -7,6 +7,7 @@ Home Assistant custom integration，透過 `media-source://hichannel/<channel-id
 | Channel ID | 頻道名稱 |
 |---|---|
 | `bestradio` | Best Radio 好事聯播網 |
+| `hitoradio` | Hit FM聯播網 |
 
 ## 安裝
 

@@ -27,6 +27,15 @@ CHANNELS: dict[str, dict] = {
         "name": "Best Radio 好事聯播網",
         "url": "http://www.bestradio.com.tw",
         "thumbnail": None,
+        "resolver": "page_regex",
+    },
+    "hitoradio": {
+        "name": "Hit FM聯播網",
+        "url": "https://www.hitoradio.com",
+        "thumbnail": None,
+        "resolver": "api_post",
+        "api_url": "https://www.hitoradio.com/newweb/hichannel.php",
+        "api_data": "channelID=1&action=getLIVEURL",
     },
 }
 
@@ -80,7 +89,7 @@ class HiChannelMediaSource(MediaSource):
             raise ValueError(f"HiChannel: unknown channel '{channel_id}'")
 
         channel = CHANNELS[channel_id]
-        stream_url = await self._resolve_stream(channel_id, channel["url"])
+        stream_url = await self._resolve_stream(channel_id, channel)
         _LOGGER.debug("HiChannel resolved %s -> %s", channel_id, stream_url)
         return PlayMedia(stream_url, MIME_HLS)
 
@@ -125,8 +134,9 @@ class HiChannelMediaSource(MediaSource):
             thumbnail=ch.get("thumbnail"),
         )
 
-    async def _resolve_stream(self, channel_id: str, page_url: str) -> str:
-        """Fetch the channel page and extract the m3u8 stream URL."""
+    async def _resolve_stream(self, channel_id: str, channel: dict) -> str:
+        """Resolve the m3u8 stream URL for a channel."""
+        resolver = channel.get("resolver", "page_regex")
         session = async_get_clientsession(self.hass)
         headers = {
             "User-Agent": (
@@ -136,6 +146,32 @@ class HiChannelMediaSource(MediaSource):
             )
         }
 
+        if resolver == "api_post":
+            api_url = channel["api_url"]
+            post_headers = {
+                **headers,
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Referer": channel["url"],
+            }
+            async with session.post(
+                api_url,
+                data=channel["api_data"],
+                headers=post_headers,
+                timeout=10,
+            ) as resp:
+                resp.raise_for_status()
+                body = (await resp.text()).strip()
+
+            m = re.search(r'https?://[^\s"\']+\.m3u8[^\s"\']*', body)
+            if m:
+                return m.group(0)
+
+            raise ValueError(
+                f"HiChannel: could not find m3u8 stream for '{channel_id}' "
+                f"in POST response from {api_url}"
+            )
+
+        page_url = channel["url"]
         async with session.get(page_url, headers=headers, timeout=10) as resp:
             resp.raise_for_status()
             html = await resp.text()
